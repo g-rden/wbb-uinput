@@ -1,6 +1,6 @@
 # wbb-uinput
 
-Creates a controller with the inputs of the Wii Balance Board. No drivers or other programs needed!!!
+Creates a uinput controller with the inputs of the Wii Balance Board. No drivers or other programs needed. Works on Raspberry Pis too.
 
 # Prerequisites
 Connect the Wii Balance Board via Bluetooth. If the blue light stays on the Board is connected. Use `ls /dev/input` to find out which one the board is. It should be the /dev/input/event* with the highest number e.g. `/dev/input/event23`. Compile (e.g. `c99 wbb-uinput.c -o c99 wbb-uinput`) or use a binary from the release.
