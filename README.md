@@ -10,7 +10,7 @@ Run it with the path specified in stdin e.g. `./wbb-uinput /dev/input/event23`. 
 
 
 # Permission error
-See https://wiki.archlinux.org/title/Wiimote#Unable_to_open_uinput (or root might do?)
+See https://wiki.archlinux.org/title/Wiimote#Unable_to_open_uinput (or running as root might do?)
 
 Modified code from https://github.com/keldu/WiiWeight
 and https://github.com/GrantEdwards/uinput-joystick-demo
