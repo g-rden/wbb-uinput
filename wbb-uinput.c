@@ -1,5 +1,5 @@
 /*
-* Emulates a controller with the inputs of the Wii Balance Board
+* Creates a controller with the inputs of the Wii Balance Board
 * No drivers or other programs needed!!!
 *
 * Connect the Wii Balance Board via Bluetooth
