@@ -1,3 +1,5 @@
+Modified code from [WiiWeight](https://github.com/keldu/WiiWeight) and [uinput-joystick-demo](https://github.com/GrantEdwards/uinput-joystick-demo)
+
 # wbb-uinput
 
 Creates a uinput controller with the inputs of the Wii Balance Board. No other drivers or programs needed. Also runs on Raspberry Pi.
@@ -11,5 +13,3 @@ Run it with the path specified in stdin e.g. `./wbb-uinput /dev/input/event23`. 
 
 # Permission error
 See https://wiki.archlinux.org/title/Wiimote#Unable_to_open_uinput (or running as root might do? but don't if you don't need to and you shouldn't)
-
-Modified code from [WiiWeight](https://github.com/keldu/WiiWeight) and [uinput-joystick-demo](https://github.com/GrantEdwards/uinput-joystick-demo)
