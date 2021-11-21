@@ -37,8 +37,8 @@ void setWeight(int co, int val)
 	case ABS_HAT1Y: weight.bl = val; break;
 	}
 	
-	x=((weight.fr+weight.br)-(weight.fl+weight.bl))*0.1; /* set x axis multiplier */
-	y=((weight.bl+weight.br)-(weight.fl+weight.fr))*0.1; /* set y axis multiplier */
+	x=((weight.fr+weight.br)-(weight.fl+weight.bl))*1; /* set x axis multiplier */
+	y=((weight.bl+weight.br)-(weight.fl+weight.fr))*1; /* set y axis multiplier */
 }
 
 int main(int argc, char** argv)
@@ -46,16 +46,15 @@ int main(int argc, char** argv)
 	char* input_device=NULL;
 	int fdr, bytes;
 	struct input_event evr;
-	struct input_event evw[8];
-	memset(&evw, 0, sizeof evw);
+	struct input_event evw[3];
+	memset(&evw, 0, sizeof(evw));
+	input_device=argv[1];
+	fdr=open(input_device, O_RDONLY);
 
 	if (argc<2){
 		printf("Missing device path! Specify path. /dev/input/event*\n");
 		return 1;
 	}
-
-	input_device=argv[1];
-	fdr=open(input_device, O_RDONLY);
 
 	if (fdr<0){
 		perror("Failed to open device! Correct path?\n");
@@ -71,12 +70,12 @@ int main(int argc, char** argv)
 
 	ioctl(fdw, UI_SET_EVBIT, EV_ABS);
 
-	setup_abs(fdw, ABS_X,    -512,   512);
-	setup_abs(fdw, ABS_Y,    -512,   512);
+	setup_abs(fdw, ABS_X,   -8192,  8192);
+	setup_abs(fdw, ABS_Y,   -8192,  8192);
 	setup_abs(fdw, ABS_Z,  -32767, 32767);
 
 	struct uinput_setup setup = {
-		.name = "Userspace Joystick",
+		.name = "wbb",
 		.id = {
 			.bustype = BUS_USB,
 			.vendor  = 0x3,
@@ -100,22 +99,22 @@ int main(int argc, char** argv)
 
 		if (evr.type==EV_ABS){
 			setWeight(evr.code, evr.value);
-			printf("x %d\ny %d\n", x, y); /* not needed, comment out if you want */
+			printf("x %d\ny %d\n", x, y); /* not needed */
 		}
 
-		evw[4].type  = EV_ABS;
-		evw[4].code  = ABS_Y;
-		evw[4].value = y;
+		evw[0].type  = EV_ABS;
+		evw[0].code  = ABS_Y;
+		evw[0].value = y;
 
-		evw[5].type  = EV_ABS;
-		evw[5].code  = ABS_X;
-		evw[5].value = x;
+		evw[1].type  = EV_ABS;
+		evw[1].code  = ABS_X;
+		evw[1].value = x;
 
-		evw[7].type  = EV_SYN;
-		evw[7].code  = SYN_REPORT;
-		evw[7].value = 0;
+		evw[2].type  = EV_SYN;
+		evw[2].code  = SYN_REPORT;
+		evw[2].value = 0;
 
-		if (write(fdw, &evw, sizeof evw) < 0) {
+		if (write(fdw, &evw, sizeof(evw)) < 0) {
 			perror("write");
 			return 1;
 		}
