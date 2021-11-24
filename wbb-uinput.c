@@ -20,13 +20,11 @@
 #include <unistd.h>
 
 static void setup_abs(int fdw, unsigned chan, int min, int max);
-
+static int x, y;
 struct weight_values
 {
 	int fr, fl, br, bl;
 } weight;
-
-static int x, y;
 
 void setWeight(int co, int val)
 {
@@ -45,18 +43,19 @@ int main(int argc, char** argv)
 {
 	char* input_device=NULL;
 	int fdr, bytes;
-	struct input_event evr;
-	struct input_event evw[3];
-	memset(&evw, 0, sizeof(evw));
 	input_device=argv[1];
 	fdr=open(input_device, O_RDONLY);
+	struct input_event evr;
+	
+	struct input_event evw[3];
+	memset(&evw, 0, sizeof(evw));
 
-	if (argc<2){
+	if (argc < 2){
 		printf("Missing device path! Specify path. /dev/input/event*\n");
 		return 1;
 	}
 
-	if (fdr<0){
+	if (fdr < 0){
 		perror("Failed to open device! Correct path?\n");
 		return 1;
 	}
@@ -95,9 +94,9 @@ int main(int argc, char** argv)
 	}
 
 	while (1) {
-		bytes=read(fdr, &evr, sizeof(struct input_event));
+		bytes = read(fdr, &evr, sizeof(struct input_event));
 
-		if (evr.type==EV_ABS){
+		if (evr.type == EV_ABS){
 			setWeight(evr.code, evr.value);
 			printf("x %d\ny %d\n", x, y); /* not needed */
 		}
