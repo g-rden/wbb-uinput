@@ -19,12 +19,14 @@
 #include <string.h>
 #include <unistd.h>
 
+void setWeight(int co, int val);
 static void setup_abs(int fdw, unsigned chan, int min, int max);
 static int x, y;
 struct weight_values
 {
 	int fr, fl, br, bl;
 } weight;
+int bytes;
 
 void setWeight(int co, int val)
 {
@@ -34,7 +36,6 @@ void setWeight(int co, int val)
 	case ABS_HAT0Y: weight.br = val; break;
 	case ABS_HAT1Y: weight.bl = val; break;
 	}
-	
 	x=((weight.fr+weight.br)-(weight.fl+weight.bl))*1; /* set x axis multiplier */
 	y=((weight.bl+weight.br)-(weight.fl+weight.fr))*1; /* set y axis multiplier */
 }
@@ -42,12 +43,12 @@ void setWeight(int co, int val)
 int main(int argc, char** argv)
 {
 	char* input_device=NULL;
-	int fdr, bytes;
+	int fdr;
 	input_device=argv[1];
 	fdr=open(input_device, O_RDONLY);
 	struct input_event evr;
-	
 	struct input_event evw[3];
+	memset(&evr, 0, sizeof(evr));
 	memset(&evw, 0, sizeof(evw));
 
 	if (argc < 2){
@@ -56,22 +57,22 @@ int main(int argc, char** argv)
 	}
 
 	if (fdr < 0){
-		perror("Failed to open device! Correct path?\n");
+		perror("Failed to read device! Correct path?\n");
 		return 1;
 	}
 
 	int fdw = open("/dev/uinput", O_WRONLY | O_NONBLOCK);
 
 	if (fdw < 0) {
-		perror("open /dev/uinput");
+		perror("can not open /dev/uinput");
 		return 1;
 	}
 
 	ioctl(fdw, UI_SET_EVBIT, EV_ABS);
 
-	setup_abs(fdw, ABS_X,   -8192,  8192);
-	setup_abs(fdw, ABS_Y,   -8192,  8192);
-	setup_abs(fdw, ABS_Z,  -32767, 32767);
+	setup_abs(fdw, ABS_X,   -8192,  8192); //possible steps. affects axis scaling
+	setup_abs(fdw, ABS_Y,   -8192,  8192); //possible steps. affects axis scaling
+	setup_abs(fdw, ABS_Z,  -32767, 32767); //default values for joysticks
 
 	struct uinput_setup setup = {
 		.name = "wbb",
@@ -95,7 +96,7 @@ int main(int argc, char** argv)
 
 	while (1) {
 		bytes = read(fdr, &evr, sizeof(struct input_event));
-
+		
 		if (evr.type == EV_ABS){
 			setWeight(evr.code, evr.value);
 			printf("x %d\ny %d\n", x, y); /* not needed */
@@ -114,7 +115,7 @@ int main(int argc, char** argv)
 		evw[2].value = 0;
 
 		if (write(fdw, &evw, sizeof(evw)) < 0) {
-			perror("write");
+			perror("can not write");
 			return 1;
 		}
 	}
